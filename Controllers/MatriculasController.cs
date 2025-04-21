@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Examen3.Clases;
+using Examen3.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -7,33 +9,69 @@ using System.Web.Http;
 
 namespace Examen3.Controllers
 {
+    [RoutePrefix("api/Matricula")]
+
     public class MatriculasController : ApiController
     {
-        // GET api/<controller>
-        public IEnumerable<string> Get()
+        [HttpGet]
+        [Route("ConsultarTodos")]
+        public List<Matricula> ConsultarTodos()
         {
-            return new string[] { "value1", "value2" };
+            clsMatricula matricula = new clsMatricula();
+            return matricula.ConsultarTodos();
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+
+        [HttpPost]
+        [Route("Insertar")]
+        public string Insertar([FromBody] Matricula matricula)
         {
-            return "value";
+            clsMatricula Matriculaa = new clsMatricula();
+
+            Matriculaa.matricula = matricula;
+
+            return Matriculaa.Insertar();
         }
 
-        // POST api/<controller>
-        public void Post([FromBody]string value)
+        [HttpGet]
+        [Route("ConsultarXDocumento")]
+        public Matricula ConsultarXDocumento(int idEstudiante)
         {
+            clsMatricula matricula = new clsMatricula();
+            return matricula.ConsultarXDocumento(idEstudiante);
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
+        [HttpGet]
+        [Route("ConsultarXSemestre")]
+        public Matricula ConsultarXSemestre(string SemestreMatricula)
         {
+            clsMatricula matricula = new clsMatricula();
+            return matricula.ConsultarXSemestre(SemestreMatricula);
         }
 
-        // DELETE api/<controller>/5
-        public void Delete(int id)
+        [HttpPut]
+        [Route ("Actualizar")]
+        public string Actualizar([FromBody] Matricula matricula)
         {
+            clsMatricula Matriculaa = new clsMatricula();
+
+            Matriculaa.matricula = matricula;
+            return Matriculaa.Actualizar();
         }
+
+        [HttpDelete]
+        [Route("Eliminar")]
+        public string Eliminar([FromBody] Matricula matricula)
+        {
+            clsMatricula Matriculaa = new clsMatricula();
+            Matriculaa.matricula = matricula;
+            return Matriculaa.Eliminar();
+        }
+
+
+
+
+
+
     }
 }

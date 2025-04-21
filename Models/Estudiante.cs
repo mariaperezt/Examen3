@@ -9,6 +9,7 @@
 
 namespace Examen3.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -25,7 +26,9 @@ namespace Examen3.Models
         public string NombreCompleto { get; set; }
         public string Usuario { get; set; }
         public string Clave { get; set; }
-    
+
+        [JsonIgnore]
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Matricula> Matriculas { get; set; }
     }

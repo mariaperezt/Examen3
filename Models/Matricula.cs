@@ -9,6 +9,7 @@
 
 namespace Examen3.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -22,7 +23,8 @@ namespace Examen3.Models
         public System.DateTime FechaMatricula { get; set; }
         public string SemestreMatricula { get; set; }
         public string MateriasMatriculadas { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Estudiante Estudiante { get; set; }
     }
 }
