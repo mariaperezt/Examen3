@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
+using System.Web.Http;
 using System.Xml.Linq;
 
 namespace Examen3.Clases
@@ -15,6 +16,7 @@ namespace Examen3.Clases
         public Matricula matricula {get; set;}
 
         //consultar todos 
+        [AllowAnonymous]
         public List<Matricula> ConsultarTodos()
         {
             return DBexamen3.Matriculas
@@ -22,6 +24,7 @@ namespace Examen3.Clases
         }
 
         //ingresar matricula
+        [Authorize]
         public string Insertar()
         {
             try
