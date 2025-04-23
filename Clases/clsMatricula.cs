@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Drawing.Text;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -15,8 +16,16 @@ namespace Examen3.Clases
 
         public Matricula matricula {get; set;}
 
+        private Matricula Calcular(Matricula matri)
+        {
+            matri.TotalMatricula = matri.NumeroCreditos * matri.ValorCredito;
+
+
+            return matri;
+        }
+
+
         //consultar todos 
-        [AllowAnonymous]
         public List<Matricula> ConsultarTodos()
         {
             return DBexamen3.Matriculas
@@ -24,31 +33,53 @@ namespace Examen3.Clases
         }
 
         //ingresar matricula
-        [Authorize]
-        public string Insertar()
-        {
-            try
-            {
-                DBexamen3.Matriculas.Add(matricula);
-                DBexamen3.SaveChanges();
-                return "La matricula se inserto correctamente. ";
-
-            }
-            catch (Exception ex)
-            { 
-                return "Error al ingresar matricula. Recuerde que primero debe de haber un estudiante registrado " + ex.Message;
-            }
-        
-        }
 
        
+     
+        public string Insertar()
+        {
 
-        //consultar matricula Por documento
+            try
+            {
+                Matricula NuevaMatricula = Calcular(matricula);
+                // Validar si ya existe una matrícula con ese estudiante
+                var existente = DBexamen3.Matriculas
+                    .FirstOrDefault(m => m.idEstudiante == matricula.idEstudiante);
+
+                if (existente != null)
+                {
+                    return "Ya existe una matrícula para este estudiante.";
+                }
+
+                DBexamen3.Matriculas.Add(NuevaMatricula);
+                DBexamen3.SaveChanges();
+                return "La matrícula se insertó correctamente.";
+            }
+            catch (Exception ex)
+            {
+                return "Error al ingresar matrícula. Recuerde que primero debe haber un estudiante registrado. " + ex.Message;
+            }
+        }
+        
+        //consultar por docuemnto con join sql para buscar en las tablas
+        public Matricula ConsultarXDocumento(string documento)
+        {
+            var matricula = (from m in DBexamen3.Matriculas
+                             join e in DBexamen3.Estudiantes on m.idEstudiante equals e.idEstudiante
+                             where e.Documento == documento
+                             select m).FirstOrDefault();
+            return matricula;
+        }
+        
+
+
+        //consultar matricula Por id estudiante, solo para facilidad con actualizar
         public Matricula ConsultarXDocumento(int idEstudiante)
         {           
             Matricula matri = DBexamen3.Matriculas.FirstOrDefault(e => e.idEstudiante == idEstudiante);
             return matri;      
         }
+
 
         //consultar matricula por semestre
         public Matricula ConsultarXSemestre(string SemestreMatricula)
@@ -58,28 +89,13 @@ namespace Examen3.Clases
         }
 
         //actualizar matricula
-        /*   public string Actualizar()
-           {
-               try 
-               {
-                   Matricula matr = ConsultarXDocumento(matricula.idEstudiante);
-                   if (matr == null)
-                   {
-                       return "El id del estudiante que desea actualizar no es valido, verifique de nuevo. ";
-                   }
-                   matr.SemestreMatricula = matricula.SemestreMatricula;
-                   matr.FechaMatricula = matricula.FechaMatricula;
-                   return "Se actualizo correctamente la matricula del estudiante "; 
-               }
-               catch (Exception ex)
-               {
-                   return "Error al actualizar la matricula. " + ex.Message;
-               }      
-           }*/
         public string Actualizar()
         {
             try
             {
+                Matricula NuevaMatricula = Calcular(matricula);
+                
+
                 // Consultar el registro existente de la matrícula usando el idEstudiante
                 Matricula matr = ConsultarXDocumento(matricula.idEstudiante);
 
@@ -92,12 +108,11 @@ namespace Examen3.Clases
                 // Actualizar las propiedades de la matrícula con los nuevos valores
                 matr.NumeroCreditos = matricula.NumeroCreditos;
                 matr.ValorCredito = matricula.ValorCredito;
-                matr.TotalMatricula = matricula.TotalMatricula;
+                matr.TotalMatricula = NuevaMatricula.TotalMatricula;
                 matr.FechaMatricula = matricula.FechaMatricula;
                 matr.SemestreMatricula = matricula.SemestreMatricula;
                 matr.MateriasMatriculadas = matricula.MateriasMatriculadas;
 
-                // En caso de que también quieras actualizar la relación con el estudiante (aunque no sea necesario en este caso)
                 if (matricula.Estudiante != null)
                 {
                     matr.Estudiante = matricula.Estudiante;

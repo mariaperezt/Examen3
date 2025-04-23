@@ -9,6 +9,8 @@ using System.Web.Http;
 
 namespace Examen3.Controllers
 {
+
+    [Authorize]
     [RoutePrefix("api/Matricula")]
 
     public class MatriculasController : ApiController
@@ -33,6 +35,7 @@ namespace Examen3.Controllers
             return Matriculaa.Insertar();
         }
 
+        //este metodo solo lo creamos para la consulta del metodo actualizar.
         [HttpGet]
         [Route("ConsultarXDocumento")]
         public Matricula ConsultarXDocumento(int idEstudiante)
@@ -40,6 +43,29 @@ namespace Examen3.Controllers
             clsMatricula matricula = new clsMatricula();
             return matricula.ConsultarXDocumento(idEstudiante);
         }
+
+        [HttpGet]
+        [Route("ConsultarPorDocumento")]
+        public IHttpActionResult ConsultarPorDocumento(string documento)
+        {
+            try
+            {
+                clsMatricula gestor = new clsMatricula();
+                var resultado = gestor.ConsultarXDocumento(documento);
+
+                if (resultado == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
 
         [HttpGet]
         [Route("ConsultarXSemestre")]
